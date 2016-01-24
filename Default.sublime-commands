@@ -1,0 +1,20 @@
+[
+  {
+    "caption": "Preferences: SortHtmlAttr Settings – Default",
+    "command": "open_file",
+    "args": {
+      "file": "${packages}/SortHtmlAttr/SortHtmlAttr.sublime-settings"
+    }
+  },
+  {
+    "caption": "Preferences: SortHtmlAttr Settings – User",
+    "command": "open_file",
+    "args": {
+      "file": "${packages}/User/SortHtmlAttr.sublime-settings"
+    }
+  },
+  {
+    "caption": "SortHtmlAttr: Sort in current file",
+    "command": "sort_html_attr"
+  }
+]

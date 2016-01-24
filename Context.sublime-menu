@@ -1,0 +1,4 @@
+[
+  { "caption": "-", "id": "file" },
+  { "command": "sort_html_attr", "caption": "Sort HTML Attr" }
+]

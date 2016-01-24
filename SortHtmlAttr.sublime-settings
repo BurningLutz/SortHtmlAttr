@@ -1,0 +1,5 @@
+{
+  "priority": ["id", "class", "type", "name", "value", "*", "required"],
+  "sort_on_save": true,
+  "allowed_syntaxes": ["html", "xml"]
+}
