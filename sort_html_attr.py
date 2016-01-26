@@ -1,7 +1,9 @@
 import sublime, sublime_plugin
 import re
 
-settings = sublime.load_settings("SortHtmlAttr.sublime-settings")
+def _get_setting(key, default=None):
+  settings = sublime.load_settings("SortHtmlAttr.sublime-settings")
+  return settings.get(key, default)
 
 class SortHtmlAttrCommand(sublime_plugin.TextCommand):
   def __init__(self, view):
@@ -19,7 +21,7 @@ class SortHtmlAttrCommand(sublime_plugin.TextCommand):
     tag_pattern = "(<(?!/)({tag_name}+:{tag_name}+|({tag_name}+\-)*{tag_name}+){attrs_pattern}[{sp_char}]*/?>)".format(tag_name=tag_name, attrs_pattern=attrs_pattern, sp_char=sp_char)
     self.tag_pattern = tag_pattern
 
-    self.priority = settings.get("priority")
+    self.priority = _get_setting("priority")
 
   def sort_attr(self, attrs):
     def _key(attr):
@@ -37,7 +39,7 @@ class SortHtmlAttrCommand(sublime_plugin.TextCommand):
 
   def run(self, edit):
     current_syntax = self.view.settings().get("syntax")
-    allowed_syntaxes = settings.get("allowed_syntaxes")
+    allowed_syntaxes = _get_setting("allowed_syntaxes")
     if all(map(lambda s: current_syntax.upper().find(s.upper()) == -1, allowed_syntaxes)): # do nothing if syntax not matched.
       return
 
@@ -55,7 +57,7 @@ class SortHtmlAttrCommand(sublime_plugin.TextCommand):
 
 class SortHtmlAttrOnSave(sublime_plugin.EventListener):
   def on_pre_save(self, view):
-    sort_on_save = settings.get("sort_on_save")
+    sort_on_save = _get_setting("sort_on_save")
 
     if sort_on_save:
       view.run_command("sort_html_attr")
