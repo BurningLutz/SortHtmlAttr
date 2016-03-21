@@ -26,13 +26,13 @@ class SortHtmlAttrCommand(sublime_plugin.TextCommand):
   def sort_attr(self, attrs):
     def _key(attr):
       try:
-        weight = self.priority.index(attr[1])
+        weight = self.priority.index(attr.group(2))
       except ValueError:
         try:
           weight = self.priority.index("*")
         except ValueError:
           weight = len(self.priority)
-      return (weight, attr[1])
+      return (weight, attr.group(2))
 
     sorted_attrs = sorted(attrs, key=_key)
     return sorted_attrs
@@ -45,15 +45,27 @@ class SortHtmlAttrCommand(sublime_plugin.TextCommand):
 
     start_tags = self.view.find_all(self.tag_pattern)
     start_tags.reverse()
+    preserve_white_space = _get_setting("preserve_white_space")
     for r in start_tags:
       start_tag = self.view.substr(r)
-      start_tag_without_attr = self.attrs_pattern.sub("", start_tag)
-      attr_start_from = self.attrs_pattern.search(start_tag).start()
-      attrs = self.attr_pattern.findall(start_tag)
-      attrs_sorted = [i[0] for i in self.sort_attr(attrs)]
-      attrs_sorted.insert(0, "")
-      new_start_tag = start_tag_without_attr[:attr_start_from] + " ".join(attrs_sorted) + start_tag_without_attr[attr_start_from:]
+      attrs_iter = self.attr_pattern.finditer(start_tag)
+      attr_groups = [g for g in attrs_iter]
+      attrs_sorted = [m.group(1) for m in self.sort_attr(attr_groups)]
+      if preserve_white_space:
+        attr_groups.reverse()
+        new_start_tag = start_tag
+        attrs_sorted.reverse()
+        for idx, g in enumerate(attr_groups):
+          start, end = g.span(1)
+          new_start_tag = new_start_tag[:start] + attrs_sorted[idx] + new_start_tag[end:]
+      else:
+        start_tag_without_attr = self.attrs_pattern.sub("", start_tag)
+        attr_start_from = self.attrs_pattern.search(start_tag).start()
+        attrs_sorted.insert(0, "")
+        new_start_tag = start_tag_without_attr[:attr_start_from] + " ".join(attrs_sorted) + start_tag_without_attr[attr_start_from:]
+
       self.view.replace(edit, r, new_start_tag)
+
 
 class SortHtmlAttrOnSave(sublime_plugin.EventListener):
   def on_pre_save(self, view):

@@ -1,5 +1,6 @@
 {
+  "allowed_syntaxes": ["html", "xml"],
+  "preserve_white_space": true,
   "priority": ["id", "class", "type", "name", "value", "*", "required"],
   "sort_on_save": true,
-  "allowed_syntaxes": ["html", "xml"]
 }
